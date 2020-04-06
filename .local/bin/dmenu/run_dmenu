@@ -1,0 +1,6 @@
+#!/bin/sh
+#
+
+[[ -f "$HOME/.config/dmenu/dmenurc" ]] && . "$HOME/.config/dmenu/dmenurc"
+
+$DMENU

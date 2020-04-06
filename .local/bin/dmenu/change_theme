@@ -1,0 +1,40 @@
+#!/bin/bash
+#
+#
+
+POLYBAR_DIR="$HOME/.config/polybar"
+
+[[ -f "$HOME/.config/dmenu/dmenurc" ]] && . "$HOME/.config/dmenu/dmenurc"
+
+DMENU_="dmenu -l -i $DMENU_OPTIONS"
+
+#choice=$( ls "$POLYBAR_DIR" | grep config_ | $DMENU -p "Select Bar:")
+
+#if [ $choice ]; then
+#	cp -f ${POLYBAR_DIR}/${choice} ${POLYBAR_DIR}/config
+#fi
+
+choice=$( echo -e "purple\nteal" | $DMENU_ -p "Select Theme:")
+
+if [ $choice ]; then
+
+	cp -f ${POLYBAR_DIR}/config_${choice}_small ${POLYBAR_DIR}/config
+
+	cp -f ${HOME}/.config/wall_${choice}.png ${HOME}/.config/wall.png
+
+	cp -f ${HOME}/.config/dmenu/dmenurc_${choice} ${HOME}/.config/dmenu/dmenurc 
+	
+	case $DESKTOP_SESSION in
+
+		bspwm|/usr/share/xsessions/bspwm)
+
+			cp -f ${HOME}/.config/bspwm/bspwmrc_${choice} ${HOME}/.config/bspwm/bspwmrc 
+
+			pkill -USR1 -x sxhkd
+
+			${HOME}/.config/bspwm/bspwmrc
+
+			;;
+	esac
+
+fi

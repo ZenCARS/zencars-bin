@@ -1,0 +1,105 @@
+#!/bin/sh
+# === Bare repo handlers === #
+# author: Zengineer
+
+set -e
+set -u
+
+if ! test -d "$HOME/repos"; then
+    mkdir -p "$HOME/repos"
+fi
+
+SETUP=false
+CLONE=false
+
+SUBDIR=""
+WORKTREE="$HOME"
+NAME=""
+URL=""
+
+while getopts "schn:d:u:w:" opt; do
+    case "$opt" in
+        "s")
+            SETUP=true
+            ;;
+        "c")
+            CLONE=true
+            ;;
+        "n")
+            NAME="$OPTARG"
+            ;;
+        "d")
+            SUBDIR="$OPTARG"
+            ;;
+        "u")
+            URL="$OPTARG"
+            ;;
+        "w")
+            WORKDIR="$OPTARG"
+            ;;
+        "?")
+            echo "usage: bare_repo [OPTIONS]"
+            ;;
+        "h") 
+            echo "Help:"
+            echo "      -s              Setup a new bare repo"
+            echo "      -c              Clone a bare repo"
+            echo "      -n <NAME>       Name of/for the repo"
+            echo "      -d <DIR>        Subdir in ~/repos"
+            echo "      -w <WORKTREE>   Work-tree for bare repo (default: ~/)"
+            echo "      -u <URL>        URL to clone"
+            ;;
+    esac
+done    
+
+config_bare_repo() {
+    /usr/bin/git --git-dir="$HOME/repos/$SUBDIR/$NAME" --work-tree="$WORKTREE" config --local status.showUntrackedFiles no 
+} 
+
+setup_bare_repo() {
+
+    if [ -z "$SUBDIR" ] || [ -z "$NAME" ]; then  
+        echo "use -h for help"
+        exit 1
+    fi
+
+    mkdir -pv "$HOME/repos/$SUBDIR/$NAME"
+    cd "$HOME/repos/$SUBDIR/$NAME"
+
+    git init --bare
+
+    config_bare_repo
+    echo
+    echo "bare repo setup! make sure to add the alias"
+    echo "alias $NAME=\"/usr/bin/git --git-dir=\"\$HOME/repos/$SUBDIR/$NAME --work-tree=\"$WORKTREE\"'"
+}
+
+clone_bare_repo() {
+
+    if [ -z "$SUBDIR" ] || [ -z "$NAME" ] || [ -z "$URL" ]; then  
+        echo "use -h for help"
+        exit 1
+    fi
+
+    if ! test -d "$HOME/repos/$SUBDIR"; then
+        mkdir -p "$HOME/repos/$SUBDIR"
+    fi
+
+    git clone "$URL" "$HOME/repos/$SUBDIR/$NAME"
+
+    config_bare_repo
+
+    echo "Repo cloned, checkout has to be done by hand!"
+
+}
+
+if "$CLONE" && "$SETUP"; then
+    echo "clone and setup? that makes no sense!"
+    return
+fi
+
+if "$CLONE"; then
+    clone_bare_repo
+elif "$SETUP"; then
+    setup_bare_repo
+fi
