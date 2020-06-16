@@ -71,7 +71,7 @@ setup_bare_repo() {
     config_bare_repo
     echo
     echo "bare repo setup! make sure to add the alias"
-    echo "alias $NAME=\"/usr/bin/git --git-dir=\"\$HOME/repos/$SUBDIR/$NAME --work-tree=\"$WORKTREE\"'"
+    echo "alias $NAME=\"/usr/bin/git --git-dir=\"\$HOME/repos/$SUBDIR/$NAME\" --work-tree=\"$WORKTREE\""
 }
 
 clone_bare_repo() {
