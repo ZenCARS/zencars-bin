@@ -1,0 +1,15 @@
+#!/bin/sh
+if [ ! "${ARCHROOT}" ] || [ ! "${ZENCARS_REPODIR}" ]; then
+    echo "add the following variables to aliasrc(-personal): \$ARCHCHROOT & \$ZENCARS_REPODIR"
+    exit 0
+fi
+
+[ ! -d "${ARCHROOT}" ] && mkdir -pv "${ARCHROOT}"
+
+[ ! -f "${HOME}/.makepkg.conf" ] && echo "create ~/.makepkg.conf first" && exit
+
+if ! pacman -Qi devtools &> /dev/null; then
+    sudo pacman -S devtools
+fi
+
+mkarchroot -M "${HOME}/.makepkg.conf" "${ARCHROOT}/root" base-devel
